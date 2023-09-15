@@ -1,0 +1,56 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<form action="{% url 'create_auction' %}" method="POST" >
+    {% csrf_token %}
+
+    <h1>Create New auction</h1>
+ <div name="create_content">
+ <label for="title">Title</label>
+ <input type="text" name="title">
+
+ <label for="imge_url">Image url</label>
+ <input type="text" name="imge_url">
+
+ <label for="description">description</label>
+ <textarea name="description" cols="30" rows="10"></textarea>
+
+ <label for="price">price</label>
+ <input type="text" name="price">
+
+ <input type="submit" name="btn" value="add auction">
+
+ </div>
+ <style>
+form {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+input[type="submit"] {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+ </style>
+</form>
+
+
+{% endblock %}

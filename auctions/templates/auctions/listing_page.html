@@ -1,0 +1,111 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    <div class="listing-container">
+        <div class="listing-image">
+    <img src="{{ auction.image_URL }}" alt="{{ auction.title }}">
+        </div>
+        <div class="listing-details">
+            <h1>{{ auction.title }}</h1>
+            <h6>Published by {{auction.auction_owner }} on {{ auction.date_of_auction }} </h6>
+            <h5>Price: {{ auction.starting_price }}$</h5>
+            <p>Description: {{ auction.description }}</p>
+
+            {% if auction.bid_set.all %}
+              <h5>Highest Bid: {{ highest_bid.bid }}$</h5>
+              <h6>Top Bidder: {{  user_bid.bidder }}</h6>
+            {% else %}
+           <p>No bids have been placed yet.</p>
+            {% endif %}
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="auction" value="{{ auction.id }}">
+                <input type="hidden" name="bidder'" value="{{ Bids.bidder }}">
+                <input type="hidden" name="starting_price" value="{{ auction.starting_price }}">
+                <input type="text" name="bid" placeholder="Place your bid" class="bid">
+                {% if message %}
+                    <p class="message">{{ message }}</p>
+                {% endif %}
+                <input type="submit" value="Bid" class="bid_btn">
+            </form>
+        </div>
+    </div>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+        h2 {
+            color: #007BFF;
+        }
+
+        .listing-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        .listing-image {
+            flex: 1;
+            max-width: 40%;
+            padding: 10px;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .listing-details {
+            flex: 1;
+            padding: 10px;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        h5 {
+            margin-top: 10px;
+        }
+
+        p {
+            margin-top: 10px;
+        }
+
+        form {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bid {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+
+        .message {
+            color: #f00;
+            margin-top: 5px;
+        }
+
+        .bid_btn {
+            background-color: #062245;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
