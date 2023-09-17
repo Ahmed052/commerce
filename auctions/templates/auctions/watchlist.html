@@ -1,29 +1,30 @@
 {% extends "auctions/layout.html" %}
+{% block title %}
+Watchlist
+{% endblock %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-  <div>  
-      <ul class="list1">
-        {% for auction in auctions %}
+<h2>Your Watchlist</h2>
+       
+    <ul class="list1">
+        {% for auction in watchlist %}
             <div class="list2">
                 <div class="listing-header">
                     <h3>Title: {{ auction.title }}</h3>
                 </div>
                 <img src="{{ auction.image_URL }}" alt="{{ auction.listing_title }}">
                 <div class="listing-details">
-                    Price: {{ auction.starting_price }}$ <br>
+                    Starting Price: {{ auction.starting_price }}$ <br>
                     Description: {{ auction.description }}
                 </div>
-                     <div class="listing-buttons">
-                     <form action="{% url 'listing' auction.id  %}" method="POST">
+                <div class="listing-buttons">
+                    <form action="{% url 'listing' auction.id  %}" method="POST">
                         {% csrf_token %}
-                        <input type="submit" value="View More" class="details_btn">
-                      </form>
-                     </div>
+                        <input type="submit" value="Details" class="details_btn">
+                    </form>
             </div>
         {% endfor %}
-      </ul>
-    </div>
+    </ul>
     <style>
         * {
             box-sizing: border-box;

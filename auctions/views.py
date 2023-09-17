@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User,Auction,Category
+from .models import User,Auction,Bid,Category,Comment
 
 
 def index(request):
@@ -71,15 +71,17 @@ def create_auction(request):
     
     if request.method =='POST':
         title= request.POST.get('title')
-        image_url= request.POST.get('imge_url')
+        image_URL= request.POST.get('imge_url')
         description= request.POST.get('description')
         starting_price= request.POST.get('price')
-
+        
         auction_owner= request.user
+        bid = Bid(bid=starting_price, bidder=auction_owner)
+        bid.save()
         auctions = Auction (title=title,
-        image_url=image_url,
+        image_URL=image_URL,
         description=description,
-        starting_price=starting_price, 
+        starting_price=bid, 
         auction_owner=auction_owner)
 
         auctions.save()
@@ -87,10 +89,80 @@ def create_auction(request):
         return HttpResponseRedirect(reverse("index"))
     
 def listing(request, auction_id):
+    
      auction= Auction.objects.get(id=auction_id)
+     ##auction_watchlist = request.user in auction.watchlist.all()
+     comments = Comment.objects.filter(auction=auction)
+     auction_owner = request.user == auction.auction_owner
      return render(request,"auctions/listing_page.html",{ 
             "auction": auction,
+            ##"auction_watchlist": auction_watchlist,
+            "comments": comments,
+            "auction_owner": auction_owner
         })
+
+def add_to_watchlist(request, auction_id):
+    auction= Auction.objects.get(id=auction_id)
+    user= request.user
+    auction.watchlist.add(user)
+    return HttpResponseRedirect(reverse("listing", args=(auction_id,)))
+
+def remove_from_watchlist(request, auction_id):
+    auction= Auction.objects.get(id=auction_id)
+    user= request.user
+    auction.watchlist.remove(user)
+    return HttpResponseRedirect(reverse("listing", args=(auction_id,)))
+    
+
+def watchlist(request):
+    user = request.user
+    watchlist= user.watchlist.all()
+    print(watchlist)
+    return render(request,"auctions/watchlist.html",{
+        "watchlist": watchlist
+    })
+
+def bid(request, auction_id):
+
+    if request.method=='POST':
+        bid = request.POST.get('bid')
+        auction= Auction.objects.get(id=auction_id)
+        if float(bid) > float(auction.starting_price.bid):
+            bid = Bid(bid=bid, bidder=request.user)
+            bid.save()
+            auction.starting_price = bid
+            auction.save()
+            return HttpResponseRedirect(reverse("listing", args=(auction_id)))
+        else:
+            return render(request, "auctions/error.html",{
+                "message": "Bid must be higher than the starting price"
+            })
+
+
+def add_comment(request, auction_id):
+    if request.method == "POST":
+        auction= Auction.objects.get(id=auction_id)
+        comment= request.POST.get("comment")
+        commenter= request.user
+        comment= Comment(comment=comment, commenter=commenter, auction=auction)
+        comment.save()
+        return HttpResponseRedirect(reverse("listing", args=[auction_id]))
+
+def close_auction(request, auction_id):
+    auction= Auction.objects.get(id=auction_id)
+    auction.active=False
+    auction.save()
+    auction_watchlist = request.user in auction.watchlist.all()
+    comments = Comment.objects.filter(auction=auction)
+    auction_owner = request.user == auction.auction_owner
+    return render(request,"auctions/listing_page.html",{ 
+            "auction": auction,
+            "auction_watchlist": auction_watchlist,
+            "comments": comments,
+            "auction_owner": auction_owner,
+            "message": "Auction closed"
+        })
+
 
 
 def categories(request):

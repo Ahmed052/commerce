@@ -1,36 +1,81 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+<h2>Active Listings</h2>
+   
+<div>
+    <div>
+     {% if message %}
+        <h4>{{ message }}</h4>
+     {% endif %}
+    <div>
+    <form action="{% url 'close_auction' auction.id  %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="close auction" class="close">
+    </form>
+     </div>
+    <div class="listing-buttons ">
+ {% if user.is_authenticated %} 
+    {% if auction_watchlist %} 
+    <form action="{% url 'remove_from_watchlist' auction.id %}" method="POST"> 
+         {% csrf_token %}
+     
+        <input type="submit" name="remove_from_watchlist" value="remove from watchlist" class="remove_watchlist_btn">
+     </form>
+    {% else %}
+    <form action="{% url 'add_to_watchlist' auction.id %}" method="POST">
+        {% csrf_token %}
+         
+         <input type="submit" name="add_to_watchlist" value="Add to Watchlist" class="add_watchlist_btn">
+
+     </form>
+
+     {% endif %}
+    </div>
+ {% endif %}
+</div>
+
     <div class="listing-container">
         <div class="listing-image">
     <img src="{{ auction.image_URL }}" alt="{{ auction.title }}">
         </div>
         <div class="listing-details">
-            <h1>{{ auction.title }}</h1>
+            <h1>Titl:{{ auction.title }}</h1>
             <h6>Published by {{auction.auction_owner }} on {{ auction.date_of_auction }} </h6>
+          {% if bids %}
+            <h5>Price: {{ bids.bid }}$</h5>
+          {% else %}
             <h5>Price: {{ auction.starting_price }}$</h5>
+            {% endif %}
             <p>Description: {{ auction.description }}</p>
 
-            {% if auction.bid_set.all %}
-              <h5>Highest Bid: {{ highest_bid.bid }}$</h5>
-              <h6>Top Bidder: {{  user_bid.bidder }}</h6>
-            {% else %}
-           <p>No bids have been placed yet.</p>
-            {% endif %}
-
-            <form action="" method="POST">
+            <form action="{% url 'bid' auction.id %}" method="POST">
                 {% csrf_token %}
-                <input type="hidden" name="auction" value="{{ auction.id }}">
-                <input type="hidden" name="bidder'" value="{{ Bids.bidder }}">
-                <input type="hidden" name="starting_price" value="{{ auction.starting_price }}">
                 <input type="text" name="bid" placeholder="Place your bid" class="bid">
-                {% if message %}
-                    <p class="message">{{ message }}</p>
-                {% endif %}
                 <input type="submit" value="Bid" class="bid_btn">
             </form>
         </div>
+    </div>
+     
+    <div>
+        <h2>Comments:</h2>
+        {% if comments %}
+        {% for comment in comments %}
+            <div class="comment">
+                <h5>{{ comment.commenter }}</h5>
+                <p>{{ comment.comment }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No comments yet.</p>
+    {% endif %}
+        {% if user.is_authenticated %}
+        <form action="{% url 'add_comment' auction.id %}" method="POST">
+            {% csrf_token %}
+            <textarea name="comment" placeholder="Add a comment" cols="30" rows="5"></textarea>
+            <input type="submit" value="Add Comment" class="bid_btn">
+        </form>
+        {% endif %}
     </div>
     <style>
         * {
@@ -50,6 +95,7 @@
             border: 1px solid #ccc;
             padding: 20px;
             margin: 20px;
+            margin-top: 60px;
         }
 
         .listing-image {
@@ -87,7 +133,13 @@
             display: flex;
             flex-direction: column;
         }
-
+        .listing-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+            float: right;
+            margin-right: 19px;
+        }
         .bid {
             width: 100%;
             padding: 5px;
@@ -107,5 +159,49 @@
             margin-top: 10px;
             cursor: pointer;
         }
+        .add_watchlist_btn{
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: auto;
+            float: left;
+        }
+        .add_watchlist_btn:hover {
+            background-color: #0069D9;
+        }   
+        .remove_watchlist_btn{
+            background-color: #da1212dc;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: auto;
+            float: left;
+            
+        }
+        .remove_watchlist_btn:hover {
+            background-color: #882525;
+        }
+
+        .comment {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #f9f9f9;
+    }
+
+    .comment h5 {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .comment p {
+        font-size: 14px;
+        margin-top: 5px;
+    }
     </style>
 {% endblock %}
