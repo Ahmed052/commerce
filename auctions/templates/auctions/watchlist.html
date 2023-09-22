@@ -5,9 +5,9 @@ Watchlist
 
 {% block body %}
 <h2>Your Watchlist</h2>
-       
+    {% for auction in watchlist %}
     <ul class="list1">
-        {% for auction in watchlist %}
+        
             <div class="list2">
                 <div class="listing-header">
                     <h3>Title: {{ auction.title }}</h3>
@@ -23,8 +23,9 @@ Watchlist
                         <input type="submit" value="Details" class="details_btn">
                     </form>
             </div>
-        {% endfor %}
+        
     </ul>
+    {% endfor %}
     <style>
         * {
             box-sizing: border-box;
@@ -52,7 +53,7 @@ Watchlist
         }
 
         .list2 {
-            width: 30%;
+            width: 100%;
             border: 1px solid #ccc;
             padding: 10px;
             padding-bottom: 8px;

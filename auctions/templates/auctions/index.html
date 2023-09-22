@@ -2,9 +2,11 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-  <div>  
+   
+    {% for auction in auctions %}
+     
       <ul class="list1">
-        {% for auction in auctions %}
+       
             <div class="list2">
                 <div class="listing-header">
                     <h3>Title: {{ auction.title }}</h3>
@@ -21,9 +23,11 @@
                       </form>
                      </div>
             </div>
-        {% endfor %}
+    
       </ul>
-    </div>
+    {% endfor %} 
+
+   
     <style>
         * {
             box-sizing: border-box;
@@ -51,7 +55,7 @@
         }
 
         .list2 {
-            width: 30%;
+            width: 100%;
             border: 1px solid #ccc;
             padding: 10px;
             padding-bottom: 8px;

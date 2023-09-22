@@ -19,6 +19,12 @@
  <label for="price">price</label>
  <input type="text" name="price">
 
+    <label for="category">category</label>
+    <select name="category" id="category">
+        {% for category in categories %}
+            <option value="{{ category.id }}" name="category">{{ category.category_list }}</option>
+        {% endfor %}
+    </select>
  <input type="submit" name="btn" value="add auction">
 
  </div>

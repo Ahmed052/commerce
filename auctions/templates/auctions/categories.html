@@ -2,15 +2,40 @@
 
 {% block body %}
 
-  {% for catigory in catigories %}
+  {% for category in categories %}
+   <li>
+    <a href="{% url 'display_category' category.category_list %}">
+    {{ category.category_list}}
+    </a>
+   </li> 
 
 
-   {{ catigory.category}}
 
+  {% endfor %}
 
+  {% for auction in auctions %}
+     {% if auction.category == cateogry.category_list %}
+  <ul class="list1">
+        <div class="list2">
+            <div class="listing-header">
+                <h3>Title: {{ auction.title }}</h3>
+            </div>
+            <img src="{{ auction.image_URL }}" alt="{{ auction.listing_title }}">
+            <div class="listing-details">
+                Price: {{ auction.starting_price }}$ <br>
+                Description: {{ auction.description }}
+            </div>
+                 <div class="listing-buttons">
+                 <form action="{% url 'listing' auction.id  %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="View More" class="details_btn">
+                  </form>
+                 </div>
+        </div>
+    {% endif %}
+  </ul>
+{% endfor %} 
 
- {% endfor %}
-
-
+ 
 
 {% endblock %}

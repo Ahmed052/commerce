@@ -1,0 +1,31 @@
+
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Winning Auctions</h2>
+   
+    {% for auction in auctions %}
+     
+      <ul class="list1">
+       
+            <div class="list2">
+                <div class="listing-header">
+                    <h3>Title: {{ auction.title }}</h3>
+                </div>
+                <img src="{{ auction.image_URL }}" alt="{{ auction.listing_title }}">
+                <div class="listing-details">
+                    Price: {{ auction.starting_price }}$ <br>
+                    Description: {{ auction.description }}
+                </div>
+                     <div class="listing-buttons">
+                     <form action="{% url 'listing' auction.id  %}" method="POST">
+                        {% csrf_token %}
+                        <input type="submit" value="View More" class="details_btn">
+                      </form>
+                     </div>
+            </div>
+    
+      </ul>
+    {% endfor %} 
+
+{% endblock %}   
